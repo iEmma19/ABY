@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    >
+
+    <link rel="stylesheet" href="assets/css/style04.css">
+
+    <style>
+        /* =========================
+           VIDEO + ATMOSPHERIC BG
+        ========================= */
+
+        .atmos-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: -1;
+            background: #000;
+        }
+
+        /* 
+           VIDEO CLAR PE MOBIL
+           - min-width/min-height + width/height auto = 
+             video-ul își păstrează rezoluția nativă 4K
+           - object-fit: cover taie ce depășește, nu întinde
+           - translateZ(0) forțează GPU compositing
+           - will-change hint pentru browser
+        */
+        .atmos-bg__video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%) translateZ(0);
+            -webkit-transform: translate(-50%, -50%) translateZ(0);
+            object-fit: cover;
+            object-position: center center;
+            display: block;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            will-change: transform;
+            /* previne white flash pe iOS */
+            opacity: 0;
+            animation: videoFadeIn 0.5s ease forwards;
+        }
+
+        @keyframes videoFadeIn {
+            to { opacity: 1; }
+        }
+
+        /* ascunde controllerele native pe iOS */
+        .atmos-bg__video::-webkit-media-controls {
+            display: none !important;
+        }
+        .atmos-bg__video::-webkit-media-controls-enclosure {
+            display: none !important;
+        }
+
+        /* Overlay mai subtil ca să nu mascheze detaliile video */
+        .atmos-bg__overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                circle at 50% 0%,
+                rgba(0, 0, 0, 0.1),
+                rgba(0, 0, 0, 0.4) 55%,
+                rgba(0, 0, 0, 0.6)
+            );
+        }
+
+        /* Moon */
+        .atmos-bg .moon,
+        .atmos-bg .moon-glow {
+            position: absolute;
+            top: 5%;
+            left: 18%;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .atmos-bg .moon {
+            background: radial-gradient(circle at 40% 38%, #e8e4d8 0%, #c9c4b0 30%, #a09880 60%, #6b6350 100%);
+            box-shadow: 0 0 40px rgba(200,195,170,0.25), 0 0 100px rgba(180,175,150,0.12), 0 0 200px rgba(160,155,130,0.06);
+        }
+
+        .atmos-bg .moon::before {
+            content: "";
+            position: absolute;
+            top: 25%;
+            left: 30%;
+            width: 30px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(100,95,75,0.25);
+            box-shadow: 45px 15px 0 8px rgba(100,95,75,0.15), -10px 40px 0 4px rgba(100,95,75,0.2), 30px 50px 0 12px rgba(100,95,75,0.12), 60px -10px 0 6px rgba(100,95,75,0.18), -5px -5px 0 15px rgba(100,95,75,0.08);
+        }
+
+        .atmos-bg .moon-glow {
+            background: radial-gradient(circle, rgba(200,195,170,0.08) 0%, transparent 70%);
+            transform: scale(2.5);
+        }
+
+        /* Stars */
+        .atmos-bg .stars,
+        .atmos-bg .shooting-stars-wrap {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .atmos-bg .star {
+            position: absolute;
+            border-radius: 50%;
+            background: #fff;
+            will-change: opacity;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: var(--base-op, 0.3); }
+            50% { opacity: var(--peak-op, 1); }
+        }
+
+        /* Shooting stars */
+        .atmos-bg .shooting-star {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8));
+            border-radius: 1px;
+            opacity: 0;
+            animation: shoot 1.2s ease-out forwards;
+        }
+
+        .atmos-bg .shooting-star::before {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: -1px;
+            width: 4px;
+            height: 3px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 0 6px 2px rgba(200,210,255,0.6);
+        }
+
+        @keyframes shoot {
+            0% { transform: rotate(var(--angle, 35deg)) translateX(0); opacity: 0; }
+            5% { opacity: 1; }
+            70% { opacity: 0.6; }
+            100% { transform: rotate(var(--angle, 35deg)) translateX(350px); opacity: 0; }
+        }
+
+        /* Lightning */
+        .atmos-bg .lightning-container {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .atmos-bg .flash-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 20%, rgba(160,180,255,0.25), transparent 70%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.05s ease-out;
+        }
+
+        /* Fog */
+        .atmos-bg .fog {
+            position: absolute;
+            pointer-events: none;
+            filter: blur(35px);
+        }
+
+        .atmos-bg .fog-1 {
+            top: 2%; left: -5%; width: 60%; height: 150px;
+            background: radial-gradient(ellipse at 50% 50%, rgba(140,150,180,0.25) 0%, transparent 70%);
+            animation: fogFloat1 25s ease-in-out infinite;
+        }
+
+        .atmos-bg .fog-2 {
+            top: 10%; left: 30%; width: 55%; height: 120px;
+            background: radial-gradient(ellipse at 50% 50%, rgba(160,165,195,0.22) 0%, transparent 65%);
+            animation: fogFloat2 30s ease-in-out infinite;
+        }
+
+        .atmos-bg .fog-3 {
+            top: 6%; left: 10%; width: 50%; height: 180px;
+            background: radial-gradient(ellipse at 50% 50%, rgba(120,130,165,0.18) 0%, transparent 65%);
+            animation: fogFloat3 20s ease-in-out infinite;
+        }
+
+        @keyframes fogFloat1 { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(200px); } }
+        @keyframes fogFloat2 { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-250px); } }
+        @keyframes fogFloat3 { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(180px); } }
+
+        /* Pause / Eco */
+        .atmos-bg.paused,
+        .atmos-bg.paused *,
+        .atmos-bg.paused *::before,
+        .atmos-bg.paused *::after {
+            animation-play-state: paused !important;
+        }
+
+        .atmos-bg.eco .fog,
+        .atmos-bg.eco .star,
+        .atmos-bg.eco .shooting-star { animation-play-state: paused !important; }
+        .atmos-bg.eco.fx-active .fog,
+        .atmos-bg.eco.fx-active .star,
+        .atmos-bg.eco.fx-active .shooting-star { animation-play-state: running !important; }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .atmos-bg .moon, .atmos-bg .moon-glow { width: 120px; height: 120px; top: 3%; left: 10%; }
+            .atmos-bg .moon-glow { transform: scale(2); }
+            .atmos-bg .fog { height: 80px; }
+        }
+
+        @media (max-aspect-ratio: 3/4),
+               (min-aspect-ratio: 10/9) and (max-aspect-ratio: 16/10) {
+            .atmos-bg .moon, .atmos-bg .moon-glow, .atmos-bg .fog { display: none !important; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         VIDEO + ATMOSPHERIC BG
+    ========================= -->
+
+    <div class="atmos-bg" id="atmosBg">
+
+        <video
+            class="atmos-bg__video"
+            autoplay
+            muted
+            loop
+            playsinline
+            webkit-playsinline
+            preload="auto"
+        >
+            <source
+                src="https://pub-c8ef1582632e4f58a671a8e4068a6e6f.r2.dev/Goat%20%281%29.mp4"
+                type="video/mp4"
+            >
+        </video>
+
+        <div class="atmos-bg__overlay"></div>
+
+        <div class="moon-glow" aria-hidden="true"></div>
+        <div class="moon" aria-hidden="true"></div>
+
+        <div class="stars" id="stars" aria-hidden="true"></div>
+        <div class="shooting-stars-wrap" id="shootingStars" aria-hidden="true"></div>
+
+        <div class="flash-overlay" id="flashOverlay" aria-hidden="true"></div>
+        <div class="lightning-container" id="lightningContainer" aria-hidden="true"></div>
+
+        <div class="fog fog-1" aria-hidden="true"></div>
+        <div class="fog fog-2" aria-hidden="true"></div>
+        <div class="fog fog-3" aria-hidden="true"></div>
+    </div>
+
+
+    <!-- =========================
+         PROFILE CARD
+    ========================= -->
+
+    <div class="profile-card">
+
+        <div class="profile-header-spacer"></div>
+
+        <div class="profile-body">
+
+            <div class="avatar-container">
+                <img
+                    src="https://i.ibb.co/7Jfm1hRc/IMG-5590.jpg"
+                    alt=""
+                    class="avatar-img"
+                >
+                <span class="status-badge" title=""></span>
+            </div>
+
+            <div class="user-info">
+                <h1>GOAT</h1>
+                <p class="user-id">(15551)</p>
+            </div>
+
+            <div class="links-container">
+                <a
+                    href="https://forum.xat.com/profile/67951/"
+                    class="profile-btn"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    <i class="fa-solid fa-rocket"></i>
+                    Forum profile
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         MUSIC BUTTON
+    ========================= -->
+
+    <button class="toggle-play" id="togglePlay">
+        <i id="sound" class="material-icons" style="font-size:41px">music_note</i>
+    </button>
+
+
+    <!-- =========================
+         SCRIPTS
+    ========================= -->
+
+    <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.js"></script>
+
+    <script>
+    (function () {
+
+        /* ── Muzică ── */
+        var audio = new Audio("https://files.catbox.moe/s3i77i.wav");
+        audio.loop = true;
+        audio.volume = 0.5;
+
+        var isPlaying = false;
+        var btn = document.getElementById("togglePlay");
+        var icon = document.getElementById("sound");
+
+        btn.addEventListener("click", function () {
+            if (isPlaying) {
+                audio.pause();
+                icon.textContent = "music_note";
+                isPlaying = false;
+            } else {
+                audio.play().catch(function () {});
+                icon.textContent = "music_off";
+                isPlaying = true;
+            }
+        });
+
+        /* ── Efecte atmosferice ── */
+        var bg = document.getElementById("atmosBg");
+
+        var eco = false;
+        try {
+            eco = window.matchMedia("(hover: none) and (pointer: coarse)").matches ||
+                  window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+                  (navigator.connection && navigator.connection.saveData);
+        } catch (e) {}
+        if (eco) bg.classList.add("eco");
+
+        /* Stars */
+        var starsEl = document.getElementById("stars");
+        for (var i = 0; i < 180; i++) {
+            var s = document.createElement("div");
+            s.className = "star";
+            var size = Math.random() < 0.6 ? 1 : (Math.random() < 0.75 ? 1.5 : 2.5);
+            s.style.width = size + "px";
+            s.style.height = size + "px";
+            s.style.top = (Math.random() * 80) + "%";
+            s.style.left = (Math.random() * 100) + "%";
+            var baseOp = 0.2 + Math.random() * 0.3;
+            s.style.setProperty("--base-op", baseOp);
+            s.style.setProperty("--peak-op", Math.min(baseOp + 0.5 + Math.random() * 0.3, 1));
+            if (Math.random() < 0.6) {
+                var speed = Math.random() < 0.33 ? "2.5s" : (Math.random() < 0.5 ? "1.8s" : "4s");
+                s.style.animation = "twinkle " + speed + " ease-in-out infinite";
+                s.style.animationDelay = (Math.random() * 6) + "s";
+            } else {
+                s.style.opacity = baseOp;
+            }
+            if (size >= 2) s.style.boxShadow = "0 0 " + (2 + Math.random() * 3) + "px rgba(180,190,255,0.5)";
+            starsEl.appendChild(s);
+        }
+
+        /* Shooting stars & Lightning */
+        var isWidescreen = window.matchMedia("(min-aspect-ratio: 16/10)").matches;
+        var isSplit = window.matchMedia("(min-aspect-ratio: 3/4) and (max-aspect-ratio: 10/9)").matches;
+
+        if (isWidescreen || isSplit) {
+            var shootEl = document.getElementById("shootingStars");
+
+            function spawnShootingStar() {
+                var el = document.createElement("div");
+                el.className = "shooting-star";
+                el.style.top = (3 + Math.random() * 55) + "%";
+                el.style.left = (5 + Math.random() * 85) + "%";
+                var angle = 25 + Math.random() * 30;
+                el.style.setProperty("--angle", angle + "deg");
+                el.style.transform = "rotate(" + angle + "deg");
+                el.style.width = (60 + Math.random() * 60) + "px";
+                shootEl.appendChild(el);
+                setTimeout(function () { el.remove(); }, 1500);
+            }
+
+            var lightCont = document.getElementById("lightningContainer");
+            var flashEl = document.getElementById("flashOverlay");
+            var svgNS = "http://www.w3.org/2000/svg";
+
+            function boltPoints(sx, sy, ey) {
+                var pts = sx + "," + sy, y = sy, x = sx;
+                while (y < ey) {
+                    y += 15 + Math.random() * 40;
+                    x += (Math.random() - 0.5) * 80;
+                    pts += " " + x + "," + y;
+                }
+                return pts;
+            }
+
+            function spawnLightning() {
+                var svg = document.createElementNS(svgNS, "svg");
+                svg.setAttribute("width", "100%");
+                svg.setAttribute("height", "100%");
+                svg.style.cssText = "position:absolute;top:0;left:0;filter:drop-shadow(0 0 6px rgba(150,180,255,0.9)) drop-shadow(0 0 15px rgba(100,140,255,0.5));opacity:0;";
+                var bolt = document.createElementNS(svgNS, "polyline");
+                var sx = window.innerWidth * (0.1 + Math.random() * 0.8);
+                var ey = window.innerHeight * (0.4 + Math.random() * 0.4);
+                bolt.setAttribute("points", boltPoints(sx, 0, ey));
+                bolt.setAttribute("fill", "none");
+                bolt.setAttribute("stroke", "rgba(210,220,255,0.9)");
+                bolt.setAttribute("stroke-width", "1.5");
+                bolt.setAttribute("stroke-linecap", "round");
+                bolt.setAttribute("stroke-linejoin", "round");
+                svg.appendChild(bolt);
+                lightCont.appendChild(svg);
+
+                flashEl.style.opacity = "1";
+                setTimeout(function () { flashEl.style.opacity = "0.2"; }, 60);
+                setTimeout(function () { flashEl.style.opacity = "0.8"; }, 120);
+                setTimeout(function () { flashEl.style.opacity = "0"; }, 250);
+
+                svg.animate([
+                    { opacity: 0 }, { opacity: 1, offset: 0.1 },
+                    { opacity: 0.2, offset: 0.2 }, { opacity: 0.9, offset: 0.3 }, { opacity: 0 }
+                ], { duration: 500, easing: "ease-out" }).onfinish = function () { svg.remove(); };
+            }
+
+            if (eco) {
+                function ecoBurst() {
+                    if (document.hidden) return;
+                    bg.classList.add("fx-active");
+                    spawnShootingStar();
+                    if (Math.random() < 0.18) spawnLightning();
+                    setTimeout(function () { bg.classList.remove("fx-active"); }, 1200);
+                }
+                (function loop() { setTimeout(function () { ecoBurst(); loop(); }, 6500 + Math.random() * 9000); })();
+            } else {
+                (function loop1() { setTimeout(function () { spawnShootingStar(); loop1(); }, 3000 + Math.random() * 5000); })();
+                setTimeout(function () {
+                    (function loop2() { setTimeout(function () { spawnShootingStar(); loop2(); }, 4000 + Math.random() * 7000); })();
+                }, 3000);
+                (function loopL() { setTimeout(function () { spawnLightning(); loopL(); }, 8000 + Math.random() * 15000); })();
+            }
+        }
+
+        /* Pause when tab hidden */
+        document.addEventListener("visibilitychange", function () {
+            bg.classList.toggle("paused", document.hidden);
+        });
+    })();
+    </script>
+
+</body>
+</html>
