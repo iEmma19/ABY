@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GOAT - XatSpace</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    <link rel="stylesheet" href="assets/css/style04.css" />
+  </head>
+  <body>
+<style>
+.video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.video-background video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+}
+
+</style>
+    <div class="video-background">
+	  <video autoplay muted loop playsinline webkit-playsinline>
+	    <source src="Goat.mp4" type="video/mp4" />
+	  </video>
+	</div>
+   <!-- <div class="video-background">
+	   <iframe 
+	    src="https://www.youtube.com/embed/gVKEM4K8J8A?autoplay=1&mute=1&loop=1&playlist=gVKEM4K8J8A&controls=0&playsinline=1" 
+	    title="Background Video" 
+	    frameborder="0" 
+	    allow="autoplay; encrypted-media; inline-playback" 
+	    playsinline
+	    webkit-playsinline
+	    allowfullscreen>
+	  </iframe>
+	</div>-->
+
+    <div class="profile-card">
+      
+      <div class="profile-header-spacer"></div>
+
+      <div class="profile-body">
+        
+        <div class="avatar-container">
+          <img src="https://i.ibb.co/7Jfm1hRc/IMG-5590.jpg" alt="" class="avatar-img" />
+          <span class="status-badge" title=""></span>
+        </div>
+
+        <div class="user-info">
+          <h1>GOAT</h1>
+          <p class="user-id">(15551)</p>
+        </div>
+
+        <div class="links-container">
+          <a href="https://forum.xat.com/profile/67951/" class="profile-btn" target="_blank" rel="noopener">
+            <i class="fa-solid fa-rocket"></i> Forum profile
+          </a>
+        </div>
+
+      </div>
+    </div>
+	
+	<button class="toggle-play">
+      <i id="sound" class="material-icons" style="font-size:41px">music_note</i>
+    </button>
+	
+	<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.js"></script>
+	<script src="assets/js/musica1.js"></script>
+
+  </body>
+</html>
