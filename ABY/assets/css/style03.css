@@ -1,0 +1,131 @@
+/* Fuentes personalizadas */
+.font-handwrite { font-family: 'Dancing Script', cursive; }
+.font-body { font-family: 'Montserrat', sans-serif; }
+.font-gothic { font-family: 'UnifrakturMaguntia', cursive; }
+
+/* Prevenir scroll no deseado pero permitirlo en pantallas pequeñas, bloqueos anti-robo CSS */
+body {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+img, video {
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
+/* Activar pointer events solo en botones o enlaces específicos */
+button, a, .cursor-pointer {
+    pointer-events: auto;
+}
+
+/* Fondo dinámico en movimiento (Gótico) */
+.bg-dynamic {
+    background: linear-gradient(
+        -45deg, 
+        #000000, #1a0000, #0a0000, #330000, 
+        #000000, #260000, #4d0000, #1a0000, #0a0000
+    );
+    background-size: 400% 400%;
+    animation: gradientBG 20s ease infinite;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Glow Animado del Contenedor Safari (Dark Red/Black) */
+@keyframes borderGlow {
+    0% { 
+        box-shadow: 0 0 15px rgba(220, 38, 38, 0.4), 0 0 30px rgba(0, 0, 0, 0.8); 
+        border-color: rgba(220, 38, 38, 0.3); 
+    }
+    50% { 
+        box-shadow: 0 0 25px rgba(153, 27, 27, 0.6), 0 0 50px rgba(0, 0, 0, 0.9); 
+        border-color: rgba(153, 27, 27, 0.5); 
+    }
+    100% { 
+        box-shadow: 0 0 15px rgba(220, 38, 38, 0.4), 0 0 30px rgba(0, 0, 0, 0.8); 
+        border-color: rgba(220, 38, 38, 0.3); 
+    }
+}
+
+.glow-border-animate {
+    animation: borderGlow 4s infinite alternate ease-in-out;
+    border-width: 1px;
+    border-style: solid;
+}
+
+/* Estrellas dinámicas */
+.star {
+    position: absolute;
+    border-radius: 50%;
+    animation: twinkle var(--duration) ease-in-out infinite alternate;
+    mix-blend-mode: screen; 
+}
+
+@keyframes twinkle {
+    0% { opacity: 0.1; transform: scale(0.6); }
+    100% { opacity: 0.9; transform: scale(1.4); filter: blur(0.5px); }
+}
+
+/* LÓGICA DE PANELES */
+.panel-open #center-avatar-container {
+    transform: translateX(-30%);
+}
+
+.active-panel {
+    opacity: 1 !important;
+    transform: translateX(0) translateY(-50%) !important;
+    pointer-events: auto !important;
+}
+
+/* Garantizar Responsive de los Paneles Flotantes */
+.floating-panel {
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+@media(max-width:768px){
+    .panel-open #center-avatar-container {
+        transform: translateX(0) scale(0.9);
+        opacity: 0.15;
+        filter: blur(4px);
+    }
+    .floating-panel {
+        left: 50% !important;
+        top: 50% !important;
+        right: auto !important;
+        transform: translate(-50%, -50%) scale(0.95) !important;
+        width: 90% !important;
+        max-width: 340px;
+        max-height: 80vh;
+    }
+    .active-panel {
+        transform: translate(-50%, -50%) scale(1) !important;
+    }
+}
+
+/* Utilidades extras */
+.spin-slow { animation: spin 10s linear infinite; }
+.paused-spin { animation-play-state: paused; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.panel-scroll::-webkit-scrollbar { width: 4px; }
+.panel-scroll::-webkit-scrollbar-track { background: transparent; }
+.panel-scroll::-webkit-scrollbar-thumb { background: rgba(220, 38, 38, 0.5); border-radius: 4px; }
+
+/* Intro Transition */
+.intro-hidden {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
